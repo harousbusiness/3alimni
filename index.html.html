@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>علمني أقرأ بطلاقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b3a33;
+    --ink-soft:#5c8079;
+    --paper:#f2faf7;
+    --paper-line:#d9ece6;
+    --panel:#0c5a4d;
+    --panel-2:#0e6b5a;
+    --panel-3:#127d69;
+    --accent:#f4b400;
+    --accent-dark:#d69c00;
+    --accent-soft:#ffe9ad;
+    --sage:#f4b400;
+    --sage-dark:#c98f00;
+    --sage-soft:#fff1c2;
+    --white:#ffffff;
+    --danger:#c1502e;
+    --radius:16px;
+    --radius-sm:10px;
+    --shadow:0 6px 20px rgba(12,90,77,0.16);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Cairo',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .amiri{font-family:'Amiri',serif;}
+
+  /* ===== Auth screen ===== */
+  #authScreen{
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(18,125,105,0.16), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(244,180,0,0.14), transparent 45%),
+      var(--paper);
+  }
+  .auth-card{
+    width:100%;max-width:420px;
+    background:var(--white);
+    border:1px solid var(--paper-line);
+    border-radius:22px;
+    padding:34px 30px;
+    box-shadow:var(--shadow);
+  }
+  .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+  .auth-brand .brand-badge{
+    width:48px;height:48px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #fff4d1, var(--accent) 55%, var(--accent-dark) 100%);
+    color:var(--panel);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Amiri',serif;font-weight:700;font-size:24px;
+    flex-shrink:0;
+  }
+  .auth-brand h1{margin:0;font-size:18px;font-weight:800;color:var(--panel);}
+  .auth-brand p{margin:2px 0 0;font-size:12.5px;color:var(--ink-soft);}
+  .auth-tabs{display:flex;background:var(--paper);border:1px solid var(--paper-line);border-radius:999px;padding:4px;margin-bottom:22px;}
+  .auth-tab{flex:1;text-align:center;padding:9px 10px;border-radius:999px;font-weight:700;font-size:13.5px;color:var(--ink-soft);cursor:pointer;border:none;background:transparent;font-family:'Cairo',sans-serif;}
+  .auth-tab.active{background:var(--panel);color:var(--white);}
+  .auth-form{display:none;flex-direction:column;gap:12px;}
+  .auth-form.active{display:flex;}
+  .field-label{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;display:block;}
+  .field-input{width:100%;padding:11px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--paper-line);font-family:'Cairo',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);}
+  .field-input:focus{outline:none;border-color:var(--accent);}
+  .auth-submit{margin-top:6px;background:var(--accent);color:var(--panel);border:none;border-radius:999px;padding:12px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;cursor:pointer;}
+  .auth-submit:hover{background:var(--accent-dark);}
+  .auth-error{background:#fbe9e7;color:#a34438;border:1px solid #f0c9c3;border-radius:var(--radius-sm);padding:9px 12px;font-size:12.5px;font-weight:600;display:none;}
+  .auth-error.show{display:block;}
+  .auth-note{margin-top:16px;font-size:11.5px;color:var(--ink-soft);line-height:1.7;text-align:center;}
+
+  /* ===== Header ===== */
+  header.app-header{
+    background:linear-gradient(135deg, var(--panel) 0%, var(--panel-3) 100%);
+    color:var(--white);
+    padding:14px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    position:sticky;top:0;z-index:30;
+    box-shadow:0 2px 10px rgba(0,0,0,0.15);
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-badge{
+    width:44px;height:44px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #fff4d1, var(--accent) 55%, var(--accent-dark) 100%);
+    color:var(--panel);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Amiri',serif;font-weight:700;font-size:22px;
+    flex-shrink:0;
+  }
+  .brand-text h1{margin:0;font-size:18px;font-weight:800;}
+  .brand-text p{margin:2px 0 0;font-size:12.5px;color:#cdeee5;}
+  .menu-toggle{display:none;background:var(--panel-2);border:1px solid var(--panel-3);color:var(--white);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer;font-size:18px;}
+  .header-right{display:flex;align-items:center;gap:18px;}
+  .progress-widget{display:flex;align-items:center;gap:12px;}
+  .progress-ring-wrap{position:relative;width:52px;height:52px;flex-shrink:0;}
+  .progress-ring-wrap svg{transform:rotate(-90deg);}
+  .progress-ring-track{fill:none;stroke:var(--panel-3);stroke-width:5;}
+  .progress-ring-bar{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .5s ease;}
+  .progress-ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+  .progress-text{font-size:13px;color:#cdeee5;line-height:1.5;}
+  .progress-text b{color:var(--white);font-size:14px;}
+  .logout-btn{background:transparent;border:1.5px solid var(--panel-3);color:#cdeee5;border-radius:999px;padding:8px 16px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .logout-btn:hover{background:var(--panel-2);}
+
+  /* ===== Layout ===== */
+  .app-body{display:flex;align-items:flex-start;max-width:1280px;margin:0 auto;position:relative;}
+
+  /* ===== Sidebar ===== */
+  aside.sidebar{
+    width:320px;flex-shrink:0;
+    background:var(--white);
+    border-left:1px solid var(--paper-line);
+    min-height:calc(100vh - 73px);
+    position:sticky;top:73px;align-self:flex-start;
+    max-height:calc(100vh - 73px);
+    overflow-y:auto;
+    padding:16px 14px 40px;
+  }
+  .sidebar-title{font-size:13px;color:var(--ink-soft);font-weight:700;margin:4px 6px 12px;}
+  .month-block{margin-bottom:10px;}
+  .month-header{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer;
+    font-weight:700;font-size:14.5px;color:var(--panel);
+  }
+  .month-header .chev{transition:transform .2s ease;color:var(--ink-soft);font-size:12px;}
+  .month-block.open > .month-header .chev{transform:rotate(180deg);}
+  .letter-list{list-style:none;margin:6px 0 4px;padding:0;display:none;flex-direction:column;gap:4px;}
+  .month-block.open > .letter-list{display:flex;}
+
+  .letter-block{border-radius:var(--radius-sm);overflow:hidden;}
+  .letter-header{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;
+  }
+  .letter-header:hover{background:var(--paper);}
+  .letter-header.active-group{background:#eaf6f2;}
+  .lesson-badge{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--paper);border:1px solid var(--paper-line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Amiri',serif;font-weight:700;font-size:15px;
+    flex-shrink:0;color:var(--panel);
+  }
+  .letter-header .lname{font-size:13.5px;font-weight:700;color:var(--ink);flex-grow:1;}
+  .letter-header .lcount{font-size:11px;font-weight:700;color:var(--ink-soft);background:#fff;border:1px solid var(--paper-line);border-radius:20px;padding:2px 8px;}
+  .letter-header .chev{transition:transform .2s ease;color:var(--ink-soft);font-size:11px;}
+  .letter-block.open .letter-header .chev{transform:rotate(180deg);}
+  .day-list{list-style:none;margin:4px 0 6px 30px;padding:0;display:none;flex-direction:column;gap:3px;}
+  .letter-block.open .day-list{display:flex;}
+  .day-row{
+    display:flex;align-items:center;gap:8px;
+    padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink);
+  }
+  .day-row:hover{background:var(--paper);}
+  .day-row.active{background:var(--panel);color:var(--white);}
+  .day-check{
+    width:16px;height:16px;border-radius:50%;border:1.5px solid var(--paper-line);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;
+  }
+  .day-row.done .day-check{background:var(--sage);border-color:var(--sage);color:var(--panel);}
+  .day-row.active .day-check{border-color:#ffffff66;}
+  .sidebar-backdrop{display:none;}
+
+  /* ===== Main ===== */
+  main.content{flex-grow:1;padding:28px 32px 60px;min-width:0;}
+  .crumb{font-size:13px;color:var(--ink-soft);margin-bottom:16px;font-weight:600;}
+  .intro-box{
+    background:var(--sage-soft);
+    border:1.5px solid var(--accent-soft);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:20px;
+    white-space:pre-line;
+    line-height:2;
+    font-size:14px;
+    color:#5a4a1c;
+  }
+  .intro-box .intro-title{font-size:16px;font-weight:800;color:var(--panel);margin:0 0 10px;white-space:normal;}
+  .intro-videolist{margin-top:14px;padding-top:14px;border-top:1px dashed var(--accent-dark);white-space:normal;}
+  .intro-videolist b{display:block;margin-bottom:8px;color:var(--panel);}
+  .intro-videolist div{margin-bottom:4px;}
+
+  .session-hero{
+    background:linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 55%, var(--panel-3) 100%);
+    border-radius:var(--radius);
+    padding:14px 20px;
+    display:flex;align-items:center;gap:14px;
+    color:var(--white);
+    box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+  }
+  .session-hero::before{content:"✦";position:absolute;top:10px;left:16px;color:var(--accent-soft);font-size:16px;opacity:.8;}
+  .session-hero::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(255,255,255,0.045) 28px);pointer-events:none;}
+  .hero-letter{
+    width:54px;height:54px;border-radius:14px;
+    background:var(--white);color:var(--panel);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Amiri',serif;font-weight:700;font-size:30px;
+    flex-shrink:0;box-shadow:inset 0 0 0 2px var(--accent-soft);
+    position:relative;z-index:1;
+  }
+  .hero-info{position:relative;z-index:1;}
+  .hero-info h2{margin:0;font-size:18px;font-weight:800;}
+  .hero-info .kicker{font-size:12px;color:var(--accent-soft);font-weight:700;margin:2px 0 0;}
+
+  .section-block{background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius);padding:22px 24px;margin-top:20px;}
+  .section-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800;color:var(--panel);margin:0 0 16px;}
+  .section-title .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+
+  .video-frame-wrap{position:relative;width:100%;padding-top:65%;background:var(--panel);border-radius:var(--radius-sm);overflow:hidden;}
+  .video-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .video-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#cdeee5;text-align:center;padding:20px;}
+  .video-empty .icon{font-size:30px;}
+  .video-empty span{font-size:13.5px;font-weight:600;}
+  .video-empty small{font-size:11.5px;color:#8fc4b6;max-width:280px;line-height:1.6;}
+
+  .worksheet-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:var(--paper);border:1px dashed var(--paper-line);
+    border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;
+  }
+  .worksheet-row:last-child{margin-bottom:0;}
+  .worksheet-info{display:flex;align-items:center;gap:12px;}
+  .worksheet-icon{width:38px;height:38px;border-radius:10px;background:var(--panel);color:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .worksheet-info b{display:block;font-size:14px;color:var(--ink);}
+  .worksheet-info small{color:var(--ink-soft);font-size:12px;}
+  .btn{border:none;border-radius:999px;padding:10px 20px;font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none;}
+  .btn-accent{background:var(--accent);color:var(--panel);}
+  .btn-accent:hover{background:var(--accent-dark);}
+  .btn-disabled{background:#e3ede9;color:#93aca3;cursor:not-allowed;}
+
+  /* Quiz */
+  .quiz-question{background:var(--paper);border:1px solid var(--paper-line);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:14px;}
+  .quiz-question:last-of-type{margin-bottom:0;}
+  .quiz-question p.qtext{margin:0 0 12px;font-weight:700;font-size:14px;color:var(--ink);}
+  .quiz-option{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1.5px solid var(--paper-line);background:var(--white);}
+  .quiz-option:last-child{margin-bottom:0;}
+  .quiz-option input{accent-color:var(--panel);}
+  .quiz-option.correct{border-color:var(--sage);background:#fff8e0;}
+  .quiz-option.incorrect{border-color:var(--danger);background:#fbe9e7;}
+  .quiz-empty{color:var(--ink-soft);font-size:13.5px;text-align:center;padding:10px;}
+  .quiz-submit-btn{margin-top:6px;}
+  .quiz-score{margin-top:14px;font-weight:800;color:var(--panel);font-size:14.5px;}
+
+  .complete-bar{margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius);padding:18px 22px;}
+  .complete-bar .msg{font-size:14px;font-weight:700;color:var(--ink);}
+  .complete-bar .msg small{display:block;font-weight:600;color:var(--ink-soft);font-size:12px;margin-top:3px;}
+  .complete-toggle{border:2px solid var(--sage);background:transparent;color:var(--sage-dark);border-radius:999px;padding:11px 22px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.15s ease;}
+  .complete-toggle.is-done{background:var(--sage);color:var(--panel);}
+
+  .nav-bar{margin-top:22px;display:flex;align-items:stretch;justify-content:space-between;gap:12px;}
+  .nav-btn{flex:1;display:flex;flex-direction:column;gap:2px;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid var(--paper-line);background:var(--white);cursor:pointer;text-align:right;}
+  .nav-btn.next-btn{text-align:left;}
+  .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
+  .nav-btn small{color:var(--ink-soft);font-size:11.5px;font-weight:700;}
+  .nav-btn b{color:var(--panel);font-size:14.5px;font-family:'Amiri',serif;}
+
+  /* ===== Admin ===== */
+  .admin-fab{position:fixed;bottom:18px;left:18px;z-index:80;background:var(--panel);color:var(--white);border:none;border-radius:999px;padding:11px 18px;font-family:'Cairo',sans-serif;font-weight:700;font-size:13px;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;}
+  .admin-fab:hover{background:var(--panel-2);}
+  .admin-overlay{position:fixed;inset:0;z-index:90;background:rgba(11,58,51,0.45);display:none;align-items:center;justify-content:center;padding:20px;}
+  .admin-gate-card{width:100%;max-width:340px;background:var(--white);border-radius:18px;padding:24px;box-shadow:var(--shadow);}
+  .admin-gate-card h3{margin:0 0 14px;font-size:16px;color:var(--panel);}
+  .admin-panel{display:none;min-height:100vh;background:var(--paper);}
+  .admin-header{background:var(--panel);color:var(--white);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;}
+  .admin-header h2{margin:0;font-size:16px;font-weight:800;}
+  .admin-body{max-width:860px;margin:0 auto;padding:24px 20px 90px;}
+  .admin-summary{background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius);padding:16px 20px;margin-bottom:18px;font-size:13.5px;color:var(--ink-soft);display:flex;gap:18px;flex-wrap:wrap;}
+  .admin-summary b{color:var(--panel);}
+  .admin-month-title{font-size:15px;font-weight:800;color:var(--panel);margin:22px 0 10px;}
+
+  .admin-letter-card{background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;}
+  .admin-letter-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .admin-letter-head b{font-size:14.5px;color:var(--ink);flex-grow:1;}
+
+  .admin-day-card{background:var(--paper);border:1px solid var(--paper-line);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;}
+  .admin-day-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .admin-day-head b{font-size:13.5px;color:var(--panel);}
+
+  .admin-field{margin-bottom:8px;}
+  .admin-field label{font-size:11.5px;font-weight:700;color:var(--ink-soft);display:block;margin-bottom:3px;}
+  .admin-field input{width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid var(--paper-line);font-family:'Cairo',sans-serif;font-size:13px;color:var(--ink);background:var(--white);}
+  .admin-field input:focus{outline:none;border-color:var(--accent);}
+
+  .admin-subsection{margin-top:12px;}
+  .admin-subsection > label{font-size:11.5px;font-weight:700;color:var(--ink-soft);display:block;margin-bottom:6px;}
+  .admin-video-entry, .admin-worksheet-entry{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .admin-video-entry input, .admin-worksheet-entry input{flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid var(--paper-line);font-family:'Cairo',sans-serif;font-size:13px;color:var(--ink);background:var(--white);min-width:0;}
+  .admin-video-entry input:focus, .admin-worksheet-entry input:focus{outline:none;border-color:var(--accent);}
+  .admin-worksheet-entry .admin-worksheet-name-input{flex:0.7;}
+  .admin-remove-btn{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid var(--paper-line);background:var(--white);color:var(--ink-soft);cursor:pointer;font-size:11px;}
+  .admin-remove-btn:hover{background:#fbe9e7;color:#a34438;border-color:#f0c9c3;}
+  .admin-add-btn{background:transparent;border:1.5px dashed var(--paper-line);color:var(--panel);border-radius:999px;padding:6px 14px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;}
+  .admin-add-btn:hover{background:var(--white);}
+  .admin-remove-day-btn{background:transparent;border:1.5px solid #f0c9c3;color:#a34438;border-radius:999px;padding:5px 12px;font-family:'Cairo',sans-serif;font-weight:700;font-size:11.5px;cursor:pointer;}
+
+  .admin-quiz-question{background:var(--white);border:1px solid var(--paper-line);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+  .admin-quiz-question-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .admin-quiz-question-head b{font-size:12px;color:var(--ink-soft);}
+  .admin-quiz-option-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .admin-quiz-option-row input[type="text"]{flex:1;padding:6px 10px;border-radius:6px;border:1.5px solid var(--paper-line);font-family:'Cairo',sans-serif;font-size:12.5px;background:var(--paper);}
+  .admin-quiz-option-row input[type="radio"]{accent-color:var(--sage-dark);flex-shrink:0;}
+
+  .admin-save-bar{position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--paper-line);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:860px;margin:0 auto;}
+  .admin-save-msg{font-size:12.5px;color:var(--sage-dark);font-weight:700;display:none;}
+  .admin-save-msg.show{display:block;}
+  .admin-export{background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius);padding:18px 20px;margin-top:20px;}
+  .admin-export textarea{width:100%;height:140px;font-family:monospace;font-size:11.5px;border:1px solid var(--paper-line);border-radius:8px;padding:10px;color:var(--ink);background:var(--paper);resize:vertical;}
+  .admin-copy-msg{font-size:12px;color:var(--sage-dark);font-weight:700;margin-right:10px;display:none;}
+  .admin-copy-msg.show{display:inline;}
+
+  /* ===== Responsive ===== */
+  @media (max-width:900px){
+    .menu-toggle{display:inline-flex;align-items:center;justify-content:center;}
+    aside.sidebar{position:fixed;right:0;top:0;bottom:0;z-index:50;transform:translateX(100%);transition:transform .25s ease;box-shadow:-6px 0 24px rgba(0,0,0,0.2);}
+    aside.sidebar.open{transform:translateX(0);}
+    .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:40;}
+    .sidebar-backdrop.show{display:block;}
+    main.content{padding:20px 16px 50px;}
+    .session-hero{padding:12px 16px;}
+    .worksheet-row{flex-direction:column;align-items:stretch;text-align:center;}
+    .worksheet-info{justify-content:center;}
+    .header-right{gap:10px;}
+    .progress-text{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== شاشة تسجيل الدخول / إنشاء حساب ============== -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-badge amiri">أ</div>
+      <div>
+        <h1>علّمني أقرأ بطلاقة</h1>
+        <p>حساب خاص لمتابعة تقدّم طفلك</p>
+      </div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin">تسجيل الدخول</button>
+      <button class="auth-tab" id="tabRegister">حساب جديد</button>
+    </div>
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-form active" id="loginForm">
+      <div>
+        <label class="field-label">البريد الإلكتروني</label>
+        <input class="field-input" type="email" id="loginUsername" autocomplete="email">
+      </div>
+      <div>
+        <label class="field-label">كلمة المرور</label>
+        <input class="field-input" type="password" id="loginPassword" autocomplete="current-password">
+      </div>
+      <button type="button" class="auth-submit" id="loginSubmitBtn">دخول</button>
+    </div>
+    <div class="auth-form" id="registerForm">
+      <div>
+        <label class="field-label">اسمك (الأم)</label>
+        <input class="field-input" type="text" id="regMotherName">
+      </div>
+      <div>
+        <label class="field-label">اسم الطفل</label>
+        <input class="field-input" type="text" id="regChildName">
+      </div>
+      <div>
+        <label class="field-label">البريد الإلكتروني</label>
+        <input class="field-input" type="email" id="regUsername" autocomplete="email">
+      </div>
+      <div>
+        <label class="field-label">كلمة المرور</label>
+        <input class="field-input" type="password" id="regPassword" autocomplete="new-password">
+      </div>
+      <button type="button" class="auth-submit" id="registerSubmitBtn">إنشاء الحساب والبدء</button>
+    </div>
+    <p class="auth-note">لكل طفل حساب مستقل خاص به بتقدّم منفصل.</p>
+  </div>
+</div>
+
+<!-- ============== تطبيق الدورة ============== -->
+<div id="appShell" style="display:none;">
+  <header class="app-header">
+    <div class="brand">
+      <button class="menu-toggle" id="menuToggle" aria-label="فتح قائمة الدروس">☰</button>
+      <div class="brand-badge amiri">أ</div>
+      <div class="brand-text">
+        <h1>علّمني أقرأ بطلاقة</h1>
+        <p id="welcomeText">مرحبًا بعودتك</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="progress-widget">
+        <div class="progress-text">أنجز <b id="progressCount">0</b> من <b id="progressTotal">0</b></div>
+        <div class="progress-ring-wrap">
+          <svg width="52" height="52" viewBox="0 0 52 52">
+            <circle class="progress-ring-track" cx="26" cy="26" r="22"></circle>
+            <circle class="progress-ring-bar" id="progressRingBar" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"></circle>
+          </svg>
+          <div class="progress-ring-label"><span id="progressPercent">0%</span></div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+    </div>
+  </header>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="app-body">
+    <aside class="sidebar" id="sidebar">
+      <p class="sidebar-title">أشهر الدورة</p>
+      <div id="monthsContainer"></div>
+    </aside>
+    <main class="content" id="mainContent"></main>
+  </div>
+</div>
+
+<!-- ============== زر وأدوات لوحة التحكم (للمشرفة فقط) ============== -->
+<button class="admin-fab" id="adminFab">🛠 لوحة التحكم</button>
+
+<div class="admin-overlay" id="adminGate">
+  <div class="admin-gate-card">
+    <h3>دخول لوحة التحكم</h3>
+    <div class="admin-field">
+      <label>كلمة مرور المشرفة</label>
+      <input class="field-input" type="password" id="adminPasswordInput">
+    </div>
+    <div class="auth-error" id="adminGateError"></div>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button type="button" class="btn btn-accent" id="adminGateSubmit">دخول</button>
+      <button type="button" class="btn" style="background:var(--paper);color:var(--ink-soft);" id="adminGateCancel">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-header">
+    <h2>لوحة التحكم — الأيام والفيديوهات وأوراق العمل والاختبارات</h2>
+    <button type="button" class="logout-btn" id="adminBackBtn">⟵ رجوع للدورة</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-summary" id="adminSummary"></div>
+    <div id="adminLessonsContainer"></div>
+
+    <div class="admin-export">
+      <p class="section-title" style="margin-bottom:8px;"><span class="dot"></span> لجعل التعديلات دائمة لكل الطلاب</p>
+      <p style="font-size:12.5px;color:var(--ink-soft);line-height:1.8;margin:0 0 12px;">
+        التعديلات تعمل الآن مباشرة، لكنها مؤقتة لهذه الجلسة فقط. لجعلها دائمة: اضغطي زر نسخ الكود بالأسفل، ثم افتحي ملف الكورس بمحرر نصوص، وابحثي عن بداية بيانات الدورة داخل الكود واستبدليها بالكامل بالكود المنسوخ، ثم احفظي الملف.
+      </p>
+      <textarea id="adminExportBox" readonly></textarea>
+      <div style="margin-top:10px;">
+        <button type="button" class="btn btn-accent" id="adminCopyBtn">📋 نسخ الكود</button>
+        <span class="admin-copy-msg" id="adminCopyMsg">تم النسخ ✓</span>
+      </div>
+    </div>
+  </div>
+  <div class="admin-save-bar">
+    <span class="admin-save-msg" id="adminSaveMsg">تم حفظ التعديلات وتفعيلها ✓</span>
+    <button type="button" class="btn btn-accent" id="adminSaveBtn">💾 حفظ كل التعديلات</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDWxw4G73R51QYIQfPrNppqd5kDruuODCk",
+  authDomain: "alimni-6549c.firebaseapp.com",
+  projectId: "alimni-6549c",
+  storageBucket: "alimni-6549c.firebasestorage.app",
+  messagingSenderId: "981577120343",
+  appId: "1:981577120343:web:172df7f5e2a89461764112",
+  measurementId: "G-FKQSVBSE4L"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* ============================================================
+   بيانات الدورة
+   ============================================================ */
+const courseData = [
+  {
+    "month": "الشهر الأول",
+    "subtitle": "من الألف إلى الخاء",
+    "lessons": [
+      {
+        "letter": "ا",
+        "name": "الألف",
+        "sessions": [
+          {
+            "videoUrl": "",
+            "worksheets": [ { "name": "", "url": "" } ],
+            "quiz": { "questions": [] }
+          }
+        ]
+      },
+      {
+        "letter": "ب",
+        "name": "الباء",
+        "sessions": [
+          { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } },
+          { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } },
+          { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } },
+          { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } },
+          { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } }
+        ]
+      },
+      { "letter": "ت", "name": "التاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ث", "name": "الثاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ج", "name": "الجيم", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ح", "name": "الحاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "خ", "name": "الخاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] }
+    ]
+  },
+  {
+    "month": "الشهر الثاني",
+    "subtitle": "من الدال إلى الصاد",
+    "lessons": [
+      { "letter": "د", "name": "الدال", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ذ", "name": "الذال", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ر", "name": "الراء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ز", "name": "الزاي", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "س", "name": "السين", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ش", "name": "الشين", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ص", "name": "الصاد", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] }
+    ]
+  },
+  {
+    "month": "الشهر الثالث",
+    "subtitle": "من الضاد إلى القاف",
+    "lessons": [
+      { "letter": "ض", "name": "الضاد", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ط", "name": "الطاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ظ", "name": "الظاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ع", "name": "العين", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "غ", "name": "الغين", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ف", "name": "الفاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ق", "name": "القاف", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] }
+    ]
+  },
+  {
+    "month": "الشهر الرابع",
+    "subtitle": "من الكاف إلى الياء",
+    "lessons": [
+      { "letter": "ك", "name": "الكاف", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ل", "name": "اللام", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "م", "name": "الميم", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ن", "name": "النون", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ه", "name": "الهاء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "و", "name": "الواو", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] },
+      { "letter": "ي", "name": "الياء", "sessions": [ { "videoUrl": "", "worksheets": [ { "name": "", "url": "" } ], "quiz": { "questions": [] } } ] }
+    ]
+  }
+];
+
+const ORDINALS = ["الأول","الثاني","الثالث","الرابع","الخامس","السادس","السابع","الثامن","التاسع","العاشر","الحادي عشر","الثاني عشر"];
+function ordinalWord(n){ return ORDINALS[n-1] || ("رقم " + n); }
+
+function makeEmptySession(){
+  return { videoUrl: "", worksheets: [{name:"", url:""}], quiz: {questions: []} };
+}
+
+/* ============================================================
+   تسطيح البيانات
+   ============================================================ */
+let flatSessions = [];
+function rebuildFlatSessions(){
+  flatSessions = [];
+  courseData.forEach((month, mIdx) => {
+    month.lessons.forEach((lesson, lIdx) => {
+      lesson.sessions.forEach((session, sIdx) => {
+        flatSessions.push({
+          letter: lesson.letter,
+          name: lesson.name,
+          monthIndex: mIdx,
+          monthName: month.month,
+          lessonIndex: lIdx,
+          sessionIndex: sIdx,
+          sessionsInLesson: lesson.sessions.length,
+          videoUrl: session.videoUrl,
+          worksheets: session.worksheets,
+          quiz: session.quiz,
+          globalIndex: flatSessions.length
+        });
+      });
+    });
+  });
+}
+rebuildFlatSessions();
+
+function sessionKey(s){ return s.letter + "-" + s.monthIndex + "-" + s.lessonIndex + "-" + s.sessionIndex; }
+
+/* ============================================================
+   حفظ بيانات المستخدم (التقدم) في المتصفح حسب إيميل المستخدم
+   ============================================================ */
+let currentUsername = null;
+let completed = {};
+let currentIndex = 0;
+let quizAnswers = {};
+
+function loadUserData(email) {
+  currentUsername = email;
+  const saved = localStorage.getItem('user_data_' + email);
+  if(saved) {
+      completed = JSON.parse(saved);
+  } else {
+      completed = {};
+  }
+}
+
+function saveUserData() {
+  if(currentUsername) {
+      localStorage.setItem('user_data_' + currentUsername, JSON.stringify(completed));
+  }
+}
+
+/* ============================================================
+   شاشة الدخول / التسجيل باستخدام Firebase
+   ============================================================ */
+const authScreen = document.getElementById("authScreen");
+const appShell = document.getElementById("appShell");
+const authError = document.getElementById("authError");
+const tabLogin = document.getElementById("tabLogin");
+const tabRegister = document.getElementById("tabRegister");
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+
+function showAuthError(msg){ authError.textContent = msg; authError.classList.add("show"); }
+function clearAuthError(){ authError.textContent = ""; authError.classList.remove("show"); }
+
+tabLogin.addEventListener("click", () => {
+  tabLogin.classList.add("active"); tabRegister.classList.remove("active");
+  loginForm.classList.add("active"); registerForm.classList.remove("active");
+  clearAuthError();
+});
+tabRegister.addEventListener("click", () => {
+  tabRegister.classList.add("active"); tabLogin.classList.remove("active");
+  registerForm.classList.add("active"); loginForm.classList.remove("active");
+  clearAuthError();
+});
+
+// مراقبة حالة تسجيل الدخول
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loadUserData(user.email);
+    document.getElementById("welcomeText").textContent = "مرحبًا بك 🌸";
+    authScreen.style.display = "none";
+    appShell.style.display = "block";
+    renderAll();
+  } else {
+    currentUsername = null;
+    completed = {};
+    authScreen.style.display = "flex";
+    appShell.style.display = "none";
+  }
+});
+
+// دالة تسجيل الدخول
+async function attemptLogin() {
+  clearAuthError();
+  const email = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  if (!email || !password) { showAuthError("يرجى إدخال البريد الإلكتروني وكلمة المرور."); return; }
+  
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    showAuthError("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+  }
+}
+
+// دالة إنشاء حساب جديد
+async function attemptRegister() {
+  clearAuthError();
+  const email = document.getElementById("regUsername").value.trim();
+  const password = document.getElementById("regPassword").value;
+  if (!email || !password) { showAuthError("يرجى تعبئة جميع الحقول."); return; }
+  
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    if (error.code === 'auth/email-already-in-use') {
+      showAuthError("هذا البريد مستخدم بالفعل، الرجاء تسجيل الدخول.");
+    } else if (error.code === 'auth/weak-password') {
+      showAuthError("كلمة المرور ضعيفة جدًا، يجب أن تكون 6 أحرف على الأقل.");
+    } else {
+      showAuthError("حدث خطأ أثناء إنشاء الحساب.");
+    }
+  }
+}
+
+// دالة تسجيل الخروج
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  ["loginUsername","loginPassword","regMotherName","regChildName","regUsername","regPassword"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  clearAuthError();
+});
+
+document.getElementById("loginSubmitBtn").addEventListener("click", attemptLogin);
+document.getElementById("registerSubmitBtn").addEventListener("click", attemptRegister);
+
+["loginUsername","loginPassword"].forEach(id => {
+  document.getElementById(id).addEventListener("keydown", (e) => { if(e.key === "Enter") attemptLogin(); });
+});
+["regMotherName","regChildName","regUsername","regPassword"].forEach(id => {
+  document.getElementById(id).addEventListener("keydown", (e) => { if(e.key === "Enter") attemptRegister(); });
+});
+
+
+/* ============================================================
+   أدوات الفيديو
+   ============================================================ */
+function toEmbedUrl(url){
+  if(!url) return null;
+  url = url.trim();
+  let m = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if(m) return "https://www.youtube.com/embed/" + m[1];
+  m = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if(m) return "https://www.youtube.com/embed/" + m[1];
+  m = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+  if(m) return "https://www.youtube.com/embed/" + m[1];
+  m = url.match(/vimeo\.com\/(\d+)/);
+  if(m) return "https://player.vimeo.com/video/" + m[1];
+  if(url.match(/player\.vimeo\.com\/video\//)) return url;
+  return url;
+}
+
+function generateIntroText(lesson){
+  const n = lesson.sessions.length;
+  return `يجب البدء في تطبيق حرف "${lesson.letter}" مع ابنك لمدة ${n} أيام كاملة أو أكثر، لنعطي كل حرف حقه 🚀🚀
+
+يوجد ${n} فيديوهات خاصة بحرف "${lesson.letter}" من أجل التعرف على أسلوب التعليم وبناء روتين قوي ومرن للطفل...
+
+وكل فيديو هو عبارة عن حصة واحدة، يمكنك تعليم ما يوجد فيها في يوم واحد، يعني في البداية كل يوم حصة واحدة...
+
+وبالتالي حرف "${lesson.letter}" يأخذ ${n} حصص يعني ${n} أيام... نرجو الالتزام بهذه المدة كما هي..
+
+ولا تستعجلي طفلك لأننا في حالة تأسيس قوي وعميق للحروف من أجل تثبيتها في عقل الطفل 🛎`;
+}
+
+function letterCompletionCount(mIdx, lIdx){
+  const lesson = courseData[mIdx].lessons[lIdx];
+  return lesson.sessions.filter((s, sIdx) => completed[lesson.letter + "-" + mIdx + "-" + lIdx + "-" + sIdx]).length;
+}
+
+/* ============================================================
+   القائمة الجانبية
+   ============================================================ */
+function renderSidebar(){
+  const current = flatSessions[currentIndex];
+  const container = document.getElementById("monthsContainer");
+  container.innerHTML = "";
+
+  courseData.forEach((month, mIdx) => {
+    const monthBlock = document.createElement("div");
+    monthBlock.className = "month-block" + (mIdx === current.monthIndex ? " open" : "");
+
+    const monthHeader = document.createElement("div");
+    monthHeader.className = "month-header";
+    monthHeader.innerHTML = `<span>${month.month}</span><span class="chev">▾</span>`;
+    monthHeader.addEventListener("click", () => monthBlock.classList.toggle("open"));
+    monthBlock.appendChild(monthHeader);
+
+    const letterList = document.createElement("ul");
+    letterList.className = "letter-list";
+
+    month.lessons.forEach((lesson, lIdx) => {
+      const letterBlock = document.createElement("li");
+      const isActiveGroup = (mIdx === current.monthIndex && lIdx === current.lessonIndex);
+      letterBlock.className = "letter-block" + (isActiveGroup ? " open" : "");
+
+      const doneCount = letterCompletionCount(mIdx, lIdx);
+      const letterHeader = document.createElement("div");
+      letterHeader.className = "letter-header" + (isActiveGroup ? " active-group" : "");
+      letterHeader.innerHTML = `
+        <span class="lesson-badge amiri">${lesson.letter}</span>
+        <span class="lname">${lesson.name}</span>
+        <span class="lcount">${doneCount}/${lesson.sessions.length}</span>
+        <span class="chev">▾</span>`;
+      letterHeader.addEventListener("click", () => letterBlock.classList.toggle("open"));
+      letterBlock.appendChild(letterHeader);
+
+      const dayList = document.createElement("ul");
+      dayList.className = "day-list";
+      lesson.sessions.forEach((session, sIdx) => {
+        const globalIdx = flatSessions.findIndex(s => s.monthIndex===mIdx && s.lessonIndex===lIdx && s.sessionIndex===sIdx);
+        const isDone = !!completed[lesson.letter + "-" + mIdx + "-" + lIdx + "-" + sIdx];
+        const isActive = globalIdx === currentIndex;
+        const dayRow = document.createElement("li");
+        dayRow.className = "day-row" + (isActive ? " active" : "") + (isDone ? " done" : "");
+        dayRow.innerHTML = `<span class="day-check">✓</span><span>اليوم ${sIdx + 1}</span>`;
+        dayRow.addEventListener("click", () => {
+          currentIndex = globalIdx;
+          renderAll();
+          closeMobileSidebar();
+          document.getElementById("mainContent").scrollIntoView({behavior:"smooth", block:"start"});
+        });
+        dayList.appendChild(dayRow);
+      });
+      letterBlock.appendChild(dayList);
+      letterList.appendChild(letterBlock);
+    });
+
+    monthBlock.appendChild(letterList);
+    container.appendChild(monthBlock);
+  });
+}
+
+/* ============================================================
+   محتوى الجلسة (اليوم) الحالية
+   ============================================================ */
+function renderLesson(){
+  const s = flatSessions[currentIndex];
+  const lesson = courseData[s.monthIndex].lessons[s.lessonIndex];
+  const isDone = !!completed[sessionKey(s)];
+  const embed = toEmbedUrl(s.videoUrl);
+  const worksheets = (s.worksheets && s.worksheets.length) ? s.worksheets : [{name:"", url:""}];
+
+  let introHtml = "";
+  if(s.sessionIndex === 0){
+    introHtml = `
+      <div class="intro-box">
+        <p class="intro-title">👈 التعرف على حرف "${lesson.name}" وتثبيته ✍️</p>${generateIntroText(lesson)}
+        <div class="intro-videolist">
+          <b>🔰 فيديوهات حرف ${lesson.name}:</b>
+          ${lesson.sessions.map((sess, i) => `<div>👈 الفيديو ${ordinalWord(i+1)} + أوراق العمل + اختبار إلكتروني</div>`).join("")}
+        </div>
+      </div>`;
+  }
+
+  const worksheetsHtml = worksheets.map((w) => `
+    <div class="worksheet-row">
+      <div class="worksheet-info">
+        <span class="worksheet-icon">📄</span>
+        <div>
+          <b>${w.name || "ورقة عمل"}</b>
+          <small>ملف قابل للطباعة للتدريب على كتابة الحرف</small>
+        </div>
+      </div>
+      ${w.url
+        ? `<a class="btn btn-accent" href="${w.url}" download target="_blank" rel="noopener">⬇ تحميل الورقة</a>`
+        : `<span class="btn btn-disabled">لم تُضف الورقة بعد</span>`
+      }
+    </div>`).join("");
+
+  const quizQuestions = (s.quiz && s.quiz.questions) ? s.quiz.questions : [];
+  const quizHtml = quizQuestions.length
+    ? quizQuestions.map((q, qi) => `
+        <div class="quiz-question" data-qi="${qi}">
+          <p class="qtext">${qi + 1}. ${q.question}</p>
+          ${q.options.map((opt, oi) => `
+            <label class="quiz-option" data-oi="${oi}">
+              <input type="radio" name="quiz-${qi}" value="${oi}">
+              <span>${opt}</span>
+            </label>`).join("")}
+        </div>`).join("") + `
+        <button type="button" class="btn btn-accent quiz-submit-btn" id="quizSubmitBtn">تحقق من الإجابات</button>
+        <div class="quiz-score" id="quizScore" style="display:none;"></div>`
+    : `<div class="quiz-empty">لم يُضف اختبار لهذا اليوم بعد</div>`;
+
+  const main = document.getElementById("mainContent");
+  main.innerHTML = `
+    <div class="crumb">${s.monthName} — حرف ${lesson.name} — اليوم ${s.sessionIndex + 1} من ${s.sessionsInLesson}</div>
+
+    ${introHtml}
+
+    <div class="session-hero">
+      <div class="hero-letter">${s.letter}</div>
+      <div class="hero-info">
+        <h2>حرف ${lesson.name} — اليوم ${s.sessionIndex + 1}</h2>
+        <p class="kicker">التعرف على الحرف وتثبيته</p>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <p class="section-title"><span class="dot"></span> فيديو اليوم</p>
+      <div class="video-frame-wrap">
+        ${embed
+          ? `<iframe src="${embed}" title="فيديو حرف ${lesson.name} اليوم ${s.sessionIndex+1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          : `<div class="video-empty">
+               <span class="icon">🎬</span>
+               <span>لم يُضف فيديو لهذا اليوم بعد</span>
+               <small>أضيفي رابط الفيديو من لوحة التحكم.</small>
+             </div>`
+        }
+      </div>
+    </div>
+
+    <div class="section-block">
+      <p class="section-title"><span class="dot"></span> ورقة العمل</p>
+      ${worksheetsHtml}
+    </div>
+
+    <div class="section-block">
+      <p class="section-title"><span class="dot"></span> الاختبار الإلكتروني</p>
+      ${quizHtml}
+    </div>
+
+    <div class="complete-bar">
+      <div class="msg">
+        ${isDone ? "أحسنت! أتممتما هذا اليوم" : "لم يكتمل هذا اليوم بعد"}
+        <small>${isDone ? "يمكنك إلغاء العلامة إذا احتجتما مراجعته مجددًا" : "بعد المشاهدة والتدريب، اضغطي لوضع علامة مكتمل"}</small>
+      </div>
+      <button class="complete-toggle ${isDone ? "is-done" : ""}" id="completeBtn">
+        <span>${isDone ? "✓" : "○"}</span>
+        <span>${isDone ? "مكتمل" : "وضع علامة مكتمل"}</span>
+      </button>
+    </div>
+
+    <div class="nav-bar">
+      <button class="nav-btn" id="prevBtn" ${currentIndex === 0 ? "disabled" : ""}>
+        <small>→ السابق</small>
+        <b>${currentIndex > 0 ? sessionLabel(flatSessions[currentIndex - 1]) : "—"}</b>
+      </button>
+      <button class="nav-btn next-btn" id="nextBtn" ${currentIndex === flatSessions.length - 1 ? "disabled" : ""}>
+        <small>التالي ←</small>
+        <b>${currentIndex < flatSessions.length - 1 ? sessionLabel(flatSessions[currentIndex + 1]) : "—"}</b>
+      </button>
+    </div>
+  `;
+
+  document.getElementById("completeBtn").addEventListener("click", () => {
+    const key = sessionKey(s);
+    completed[key] = !completed[key];
+    saveUserData();
+    renderAll();
+  });
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  if(prevBtn) prevBtn.addEventListener("click", () => { if(currentIndex>0){ currentIndex--; renderAll(); window.scrollTo({top:0, behavior:"smooth"}); } });
+  if(nextBtn) nextBtn.addEventListener("click", () => { if(currentIndex<flatSessions.length-1){ currentIndex++; renderAll(); window.scrollTo({top:0, behavior:"smooth"}); } });
+
+  const quizSubmitBtn = document.getElementById("quizSubmitBtn");
+  if(quizSubmitBtn){
+    quizSubmitBtn.addEventListener("click", () => {
+      let correctCount = 0;
+      quizQuestions.forEach((q, qi) => {
+        const selected = main.querySelector(`input[name="quiz-${qi}"]:checked`);
+        const selectedVal = selected ? Number(selected.value) : -1;
+        if(selectedVal === q.correctIndex) correctCount++;
+        main.querySelectorAll(`.quiz-question[data-qi="${qi}"] .quiz-option`).forEach(optEl => {
+          const oi = Number(optEl.dataset.oi);
+          optEl.classList.remove("correct","incorrect");
+          if(oi === q.correctIndex) optEl.classList.add("correct");
+          else if(oi === selectedVal) optEl.classList.add("incorrect");
+        });
+      });
+      const scoreEl = document.getElementById("quizScore");
+      scoreEl.style.display = "block";
+      scoreEl.textContent = `النتيجة: ${correctCount} من ${quizQuestions.length} إجابات صحيحة`;
+    });
+  }
+}
+
+function sessionLabel(s){
+  return "حرف " + s.name + " — اليوم " + (s.sessionIndex + 1);
+}
+
+function renderProgress(){
+  const doneCount = Object.values(completed).filter(Boolean).length;
+  const total = flatSessions.length;
+  const pct = total ? Math.round((doneCount / total) * 100) : 0;
+  document.getElementById("progressCount").textContent = doneCount;
+  document.getElementById("progressTotal").textContent = total;
+  document.getElementById("progressPercent").textContent = pct + "%";
+  const circumference = 138.2;
+  const offset = circumference - (pct/100) * circumference;
+  document.getElementById("progressRingBar").style.strokeDashoffset = offset;
+}
+
+function renderAll(){
+  if(currentIndex >= flatSessions.length) currentIndex = Math.max(0, flatSessions.length - 1);
+  renderSidebar();
+  renderLesson();
+  renderProgress();
+}
+
+/* القائمة الجانبية على الجوال */
+const sidebar = document.getElementById("sidebar");
+const backdrop = document.getElementById("sidebarBackdrop");
+document.getElementById("menuToggle").addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  backdrop.classList.toggle("show");
+});
+backdrop.addEventListener("click", closeMobileSidebar);
+function closeMobileSidebar(){
+  sidebar.classList.remove("open");
+  backdrop.classList.remove("show");
+}
+
+/* ============================================================
+   لوحة التحكم (المشرفة فقط)
+   ============================================================ */
+const ADMIN_PASSWORD = "horous2026";
+
+const adminFab = document.getElementById("adminFab");
+const adminGate = document.getElementById("adminGate");
+const adminPanel = document.getElementById("adminPanel");
+const adminGateError = document.getElementById("adminGateError");
+
+adminFab.addEventListener("click", () => {
+  document.getElementById("adminPasswordInput").value = "";
+  adminGateError.classList.remove("show");
+  adminGate.style.display = "flex";
+});
+document.getElementById("adminGateCancel").addEventListener("click", () => { adminGate.style.display = "none"; });
+function attemptAdminLogin(){
+  const pass = document.getElementById("adminPasswordInput").value;
+  if(pass !== ADMIN_PASSWORD){
+    adminGateError.textContent = "كلمة المرور غير صحيحة.";
+    adminGateError.classList.add("show");
+    return;
+  }
+  adminGate.style.display = "none";
+  openAdminPanel();
+}
+document.getElementById("adminGateSubmit").addEventListener("click", attemptAdminLogin);
+document.getElementById("adminPasswordInput").addEventListener("keydown", (e) => { if(e.key === "Enter") attemptAdminLogin(); });
+document.getElementById("adminBackBtn").addEventListener("click", closeAdminPanel);
+
+function openAdminPanel(){
+  authScreen.style.display = "none";
+  appShell.style.display = "none";
+  adminPanel.style.display = "block";
+  renderAdminPanel();
+}
+function closeAdminPanel(){
+  adminPanel.style.display = "none";
+  if(currentUsername){ appShell.style.display = "block"; renderAll(); }
+  else{ authScreen.style.display = "flex"; }
+}
+
+function renderAdminPanel(){
+  const totalSessions = flatSessions.length;
+  const withVideo = flatSessions.filter(s => s.videoUrl).length;
+  const withQuiz = flatSessions.filter(s => s.quiz && s.quiz.questions && s.quiz.questions.length).length;
+  document.getElementById("adminSummary").innerHTML = `
+    <span><b>${totalSessions}</b> يومًا في الدورة كاملة</span>
+    <span><b>${withVideo}</b> يومًا لديه فيديو</span>
+    <span><b>${withQuiz}</b> يومًا لديه اختبار</span>`;
+
+  const container = document.getElementById("adminLessonsContainer");
+  container.innerHTML = "";
+
+  courseData.forEach((month, mIdx) => {
+    const title = document.createElement("div");
+    title.className = "admin-month-title";
+    title.textContent = month.month;
+    container.appendChild(title);
+
+    month.lessons.forEach((lesson, lIdx) => {
+      const letterCard = document.createElement("div");
+      letterCard.className = "admin-letter-card";
+      letterCard.dataset.m = mIdx;
+      letterCard.dataset.l = lIdx;
+
+      const daysHtml = lesson.sessions.map((session, sIdx) => renderAdminDayCard(session, sIdx, lesson.sessions.length)).join("");
+
+      letterCard.innerHTML = `
+        <div class="admin-letter-head">
+          <span class="lesson-badge amiri">${lesson.letter}</span>
+          <b>حرف ${lesson.name} (${lesson.sessions.length} ${lesson.sessions.length === 1 ? "يوم" : "أيام"})</b>
+        </div>
+        <div class="admin-days-list">${daysHtml}</div>
+        <button type="button" class="admin-add-btn" data-add-day="1">+ إضافة يوم جديد لحرف ${lesson.name}</button>
+      `;
+      container.appendChild(letterCard);
+    });
+  });
+
+  updateExportBox();
+}
+
+function renderAdminDayCard(session, sIdx, totalDays){
+  const worksheets = session.worksheets && session.worksheets.length ? session.worksheets : [{name:"", url:""}];
+  const worksheetsHtml = worksheets.map(w => `
+    <div class="admin-worksheet-entry">
+      <input type="text" class="admin-worksheet-name-input" value="${(w.name||"").replace(/"/g,"&quot;")}" placeholder="اسم الورقة">
+      <input type="text" class="admin-worksheet-url-input" value="${(w.url||"").replace(/"/g,"&quot;")}" placeholder="رابط التحميل">
+      <button type="button" class="admin-remove-btn" data-remove="worksheet">✕</button>
+    </div>`).join("");
+
+  const questions = (session.quiz && session.quiz.questions) ? session.quiz.questions : [];
+  const questionsHtml = questions.map((q, qi) => renderAdminQuizQuestion(q, qi)).join("");
+
+  return `
+    <div class="admin-day-card" data-session-index="${sIdx}">
+      <div class="admin-day-head">
+        <b>اليوم ${sIdx + 1}</b>
+        ${totalDays > 1 ? `<button type="button" class="admin-remove-day-btn" data-remove-day="1">✕ حذف هذا اليوم</button>` : ""}
+      </div>
+      <div class="admin-field">
+        <label>رابط الفيديو (يوتيوب أو فيميو)</label>
+        <input type="text" class="admin-video-input" value="${(session.videoUrl||"").replace(/"/g,"&quot;")}" placeholder="https://youtu.be/...">
+      </div>
+      <div class="admin-subsection">
+        <label>أوراق العمل</label>
+        <div class="admin-worksheet-list">${worksheetsHtml}</div>
+        <button type="button" class="admin-add-btn" data-add="worksheet">+ إضافة ورقة عمل</button>
+      </div>
+      <div class="admin-subsection">
+        <label>الاختبار الإلكتروني</label>
+        <div class="admin-quiz-list">${questionsHtml}</div>
+        <button type="button" class="admin-add-btn" data-add="question">+ إضافة سؤال</button>
+      </div>
+    </div>`;
+}
+
+function renderAdminQuizQuestion(q, qi){
+  const options = q.options && q.options.length ? q.options : ["", "", ""];
+  const correctIndex = typeof q.correctIndex === "number" ? q.correctIndex : 0;
+  const optionsHtml = options.map((opt, oi) => `
+    <div class="admin-quiz-option-row">
+      <input type="radio" name="correct-${qi}-${Math.random().toString(36).slice(2,8)}" class="admin-quiz-correct-radio" data-oi="${oi}" ${oi === correctIndex ? "checked" : ""}>
+      <input type="text" class="admin-quiz-option-input" value="${(opt||"").replace(/"/g,"&quot;")}" placeholder="نص الخيار">
+      <button type="button" class="admin-remove-btn" data-remove="option">✕</button>
+    </div>`).join("");
+  return `
+    <div class="admin-quiz-question" data-qindex="${qi}">
+      <div class="admin-quiz-question-head">
+        <b>السؤال ${qi + 1}</b>
+        <button type="button" class="admin-remove-btn" data-remove="question">✕</button>
+      </div>
+      <div class="admin-field" style="margin-bottom:8px;">
+        <input type="text" class="admin-quiz-question-input" value="${(q.question||"").replace(/"/g,"&quot;")}" placeholder="نص السؤال">
+      </div>
+      <div class="admin-quiz-options-list">${optionsHtml}</div>
+      <button type="button" class="admin-add-btn" data-add="option" style="margin-top:4px;">+ إضافة خيار</button>
+    </div>`;
+}
+
+/* تفويض النقر لكل أزرار الإضافة/الحذف داخل لوحة التحكم */
+document.getElementById("adminLessonsContainer").addEventListener("click", (e) => {
+  const t = e.target;
+
+  if(t.dataset.addDay){
+    commitAdminFormToData();
+    const card = t.closest(".admin-letter-card");
+    const m = Number(card.dataset.m), l = Number(card.dataset.l);
+    courseData[m].lessons[l].sessions.push(makeEmptySession());
+    rebuildFlatSessions();
+    renderAdminPanel();
+    return;
+  }
+  if(t.dataset.removeDay){
+    commitAdminFormToData();
+    const card = t.closest(".admin-letter-card");
+    const dayCard = t.closest(".admin-day-card");
+    const m = Number(card.dataset.m), l = Number(card.dataset.l);
+    const sIdx = Number(dayCard.dataset.sessionIndex);
+    if(courseData[m].lessons[l].sessions.length > 1){
+      courseData[m].lessons[l].sessions.splice(sIdx, 1);
+      rebuildFlatSessions();
+      renderAdminPanel();
+    }
+    return;
+  }
+  if(t.dataset.add === "worksheet"){
+    const list = t.closest(".admin-subsection").querySelector(".admin-worksheet-list");
+    const entry = document.createElement("div");
+    entry.className = "admin-worksheet-entry";
+    entry.innerHTML = `
+      <input type="text" class="admin-worksheet-name-input" value="" placeholder="اسم الورقة">
+      <input type="text" class="admin-worksheet-url-input" value="" placeholder="رابط التحميل">
+      <button type="button" class="admin-remove-btn" data-remove="worksheet">✕</button>`;
+    list.appendChild(entry);
+    return;
+  }
+  if(t.dataset.remove === "worksheet"){
+    t.closest(".admin-worksheet-entry").remove();
+    return;
+  }
+  if(t.dataset.add === "question"){
+    const list = t.closest(".admin-subsection").querySelector(".admin-quiz-list");
+    const qi = list.children.length;
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = renderAdminQuizQuestion({question:"", options:["","",""], correctIndex:0}, qi);
+    list.appendChild(wrapper.firstElementChild);
+    return;
+  }
+  if(t.dataset.remove === "question"){
+    t.closest(".admin-quiz-question").remove();
+    return;
+  }
+  if(t.dataset.add === "option"){
+    const questionEl = t.closest(".admin-quiz-question");
+    const optList = questionEl.querySelector(".admin-quiz-options-list");
+    const qi = questionEl.dataset.qindex;
+    const oi = optList.children.length;
+    const row = document.createElement("div");
+    row.className = "admin-quiz-option-row";
+    row.innerHTML = `
+      <input type="radio" name="correct-${qi}-${Math.random().toString(36).slice(2,8)}" class="admin-quiz-correct-radio" data-oi="${oi}">
+      <input type="text" class="admin-quiz-option-input" value="" placeholder="نص الخيار">
+      <button type="button" class="admin-remove-btn" data-remove="option">✕</button>`;
+    optList.appendChild(row);
+    return;
+  }
+  if(t.dataset.remove === "option"){
+    t.closest(".admin-quiz-option-row").remove();
+    return;
+  }
+});
+
+function updateExportBox(){
+  document.getElementById("adminExportBox").value = "const courseData = " + JSON.stringify(courseData, null, 2) + ";";
+}
+
+function commitAdminFormToData(){
+  document.querySelectorAll(".admin-letter-card").forEach(letterCard => {
+    const m = Number(letterCard.dataset.m), l = Number(letterCard.dataset.l);
+    const dayCards = letterCard.querySelectorAll(".admin-day-card");
+    const sessions = Array.from(dayCards).map(dayCard => {
+      const videoUrl = dayCard.querySelector(".admin-video-input").value.trim();
+
+      const worksheets = Array.from(dayCard.querySelectorAll(".admin-worksheet-entry")).map(entry => ({
+        name: entry.querySelector(".admin-worksheet-name-input").value.trim(),
+        url: entry.querySelector(".admin-worksheet-url-input").value.trim()
+      })).filter(w => w.url || w.name);
+
+      const questions = Array.from(dayCard.querySelectorAll(".admin-quiz-question")).map(qEl => {
+        const questionText = qEl.querySelector(".admin-quiz-question-input").value.trim();
+        const optionRows = Array.from(qEl.querySelectorAll(".admin-quiz-option-row"));
+        const options = optionRows.map(row => row.querySelector(".admin-quiz-option-input").value.trim());
+        let correctIndex = 0;
+        optionRows.forEach((row, oi) => {
+          const radio = row.querySelector(".admin-quiz-correct-radio");
+          if(radio && radio.checked) correctIndex = oi;
+        });
+        return { question: questionText, options, correctIndex };
+      }).filter(q => q.question || q.options.some(o => o));
+
+      return { videoUrl, worksheets: worksheets.length ? worksheets : [{name:"", url:""}], quiz: {questions} };
+    });
+    courseData[m].lessons[l].sessions = sessions.length ? sessions : [makeEmptySession()];
+  });
+  rebuildFlatSessions();
+}
+
+document.getElementById("adminSaveBtn").addEventListener("click", () => {
+  commitAdminFormToData();
+  renderAdminPanel();
+  const msg = document.getElementById("adminSaveMsg");
+  msg.classList.add("show");
+  setTimeout(() => msg.classList.remove("show"), 2500);
+});
+
+document.getElementById("adminCopyBtn").addEventListener("click", () => {
+  const box = document.getElementById("adminExportBox");
+  const copyMsg = document.getElementById("adminCopyMsg");
+  box.select();
+  let copied = false;
+  try{ navigator.clipboard.writeText(box.value); copied = true; }
+  catch(e){ try{ copied = document.execCommand("copy"); }catch(e2){ copied = false; } }
+  if(copied){
+    copyMsg.classList.add("show");
+    setTimeout(() => copyMsg.classList.remove("show"), 2500);
+  }
+});
+</script>
+</body>
+</html>
